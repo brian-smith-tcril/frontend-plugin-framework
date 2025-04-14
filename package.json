@@ -1,6 +1,6 @@
 {
   "name": "@openedx/frontend-plugin-framework",
-  "version": "1.0.0-semantically-released",
+  "version": "1.7.0",
   "description": "Frontend Plugin Framework",
   "main": "dist/index.js",
   "repository": {
