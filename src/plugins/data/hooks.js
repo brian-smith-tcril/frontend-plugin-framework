@@ -14,12 +14,37 @@ import { PLUGIN_MOUNTED, PLUGIN_READY, PLUGIN_UNMOUNTED } from './constants';
  * @param {String} id - Name of PluginSlot
  * @returns {Object} - JS configuration for the PluginSlot
  */
-export function usePluginSlot(id) {
-  const configSlots = getConfigSlots()?.[id];
-  if (configSlots) {
-    return configSlots;
+export function usePluginSlot(id, id_aliases = []) {
+  const notFound = { keepDefault: true, plugins: [] };
+
+  const allConfigSlots = getConfigSlots();
+
+  if (!allConfigSlots) {
+    return notFound;
   }
-  return { keepDefault: true, plugins: [] };
+
+  // When defining a JS object with multiple entries
+  // that have the same key, only the last one is kept
+  // 
+  // We want to treat all entries in the pluginSlots object
+  // in env.config.jsx that have either "id" or any of the 
+  // "id_aliases" as if they have the same id
+  // 
+  // To do so, we grab the last entry in the object that with 
+  // a key that matches either the "id" or any of the "id_aliases"
+  const allSlotIds = [id].concat(id_aliases);
+  const lastMatchingId = Object.keys(allConfigSlots).reverse().find(slotId => allSlotIds.includes(slotId));
+
+  if (!lastMatchingId) {
+    return notFound;
+  }
+
+  const configSlots = allConfigSlots[lastMatchingId];
+
+  if (!configSlots) {
+    return notFound;
+  }
+  return configSlots;
 }
 
 /* Listening for events */
